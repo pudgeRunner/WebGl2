@@ -129,7 +129,7 @@ function draw() {
     let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.);
     let translateToPointZero = m4.translation(0, 0, -10);
 
-    let matAccum0 = m4.multiply(m4.multiply(rotateToPointZero,m4.axisRotation([0,1,0],angle)), modelView);
+    let matAccum0 = m4.multiply(rotateToPointZero, modelView);
     let matAccum1 = m4.multiply(translateToPointZero, matAccum0);
 
 
@@ -404,7 +404,7 @@ function LoadTexture() {
     image.crossOrigin = 'anonymus';
 
     // String with source of the texture
-    image.src = "https://raw.githubusercontent.com/antonpasichniuk/WebGL/CGW/texture.jpg";
+    image.src = "https://raw.githubusercontent.com/gassniffer8/university/CGW/Polished_metal_texture.jpeg";
     image.onload = () => {
         gl.bindTexture(gl.TEXTURE_2D, textureORIG);
         gl.texImage2D(
@@ -520,13 +520,3 @@ function StereoCamera(
     };
 }
 
-let angle=0
-function onRead() {
-    angle = Math.atan2(magSensor.y,magSensor.x)
-    if(angle<0){
-        angle+=Math.PI*2
-    }
-}
-let magSensor = new Magnetometer()
-magSensor.addEventListener("reading", onRead)
-magSensor.start();
