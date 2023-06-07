@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+<title>PA-1</title>
+<style>
+    body {
+        background-color: #d4d2d2;
+    }
+</style>
+
+<script src="./Utils/trackball-rotator.js"></script>
+<script src="./Utils/m4.js"></script>
+<script src="./shader.gpu"></script>
+<script src="./main.js"></script>
+
+</head>
+<body onload="init()">
+
+<h2>A Cube with "Trackball" Mouse Rotation</h2>
+
+<h2>TR-22mp, Berezhniy Vlad, PA-1</h2>
+
+<p id="message">Drag your mouse on the cube to rotate it.<br>
+(On a touch screen, you can use your finger.)</p>
+
+
+<h3>Near Clipping Distance</h3>
+<input type="range" id="nearclippingdistance" value="9" min="8" max="12" step="0.1">
+<h3>Convergence</h3>
+<input type="range" id = convergence value="50" min="10" max="100" step="10">
+<h3>Eye Separation</h3>
+<input type="range" id="eyeseparation" value="0.2" min="0.0" max="1.0" step="0.1">
+<h3>Field Of View</h3>
+<input type="range" id="fieldofview" value="0.4" min="0" max="1.2" step="0.1">
+
+
+<div id="canvas-holder">
+   <canvas width="600" height="600" id="webglcanvas" style="background-color:red"></canvas>
+</div>
+
+
+</body></html>
