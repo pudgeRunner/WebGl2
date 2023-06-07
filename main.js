@@ -129,7 +129,7 @@ function draw() {
     let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.);
     let translateToPointZero = m4.translation(0, 0, -10);
 
-    let matAccum0 = m4.multiply(rotateToPointZero, modelView);
+    let matAccum0 = m4.multiply(m4.multiply(rotateToPointZero, m4.axisRotation([0, 1, 0], angle)), modelView);
     let matAccum1 = m4.multiply(translateToPointZero, matAccum0);
 
 
@@ -519,4 +519,13 @@ function StereoCamera(
         );
     };
 }
-
+let angle = 0
+function onRead() {
+    angle = Math.atan2(magSensor.y, magSensor.x)
+    if (angle < 0) {
+        angle += Math.PI * 2
+    }
+}
+let magSensor = new Magnetometer()
+magSensor.addEventListener("reading", onRead)
+magSensor.start();
