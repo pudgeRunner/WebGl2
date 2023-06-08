@@ -15,6 +15,53 @@
 <script src="./main.js"></script>
 
 </head>
+<style>
+    /* Общие стили для всей страницы */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+    
+    /* Стили для заголовков */
+    h2 {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    h3 {
+        color: #666;
+        font-size: 18px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    
+    /* Стили для параграфов */
+    p {
+        line-height: 1.5;
+    }
+    
+    /* Стили для ползунков */
+    input[type="range"] {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    /* Стили для холста */
+    #canvas-holder {
+        width: 600px;
+        height: 600px;
+        margin-top: 20px;
+    }
+    
+    #webglcanvas {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+</style>
 <body onload="init()">
 
 <h2>A Cube with "Trackball" Mouse Rotation</h2>
