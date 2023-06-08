@@ -12,6 +12,14 @@ let userRotAngle; // texture rotation angle
 let camera;
 let textureVID, textureORIG, video, track;
 
+let step = 0;
+let sphereCoordinates = [0, 0, 0]
+let audio;
+let panner;
+let sphere;
+let ctx;
+let filter;
+
 function deg2rad(angle) {
     return angle * Math.PI / 180;
 }
@@ -126,6 +134,13 @@ function draw() {
     let modelView = spaceball.getViewMatrix();
     let noRotationView = m4.identity();
 
+
+    step += 0.02;
+    moveCircleSphere(step);
+    noRotationView = spaceball.getViewMatrix();
+
+
+
     let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.);
     let translateToPointZero = m4.translation(0, 0, -10);
 
@@ -138,6 +153,14 @@ function draw() {
     let matAccum2 = m4.multiply(rotateToPointZero, noRotationView);
     let matAccum3 = m4.multiply(translateToPointZero, matAccum2);
     let modelViewProjection = m4.multiply(projection, matAccum3);
+
+
+
+    
+    // gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+  
+
 
     // gl.uniformMatrix4fv(shProgram.iModelViewMatrix, false, modelViewProjection);
     // gl.uniformMatrix4fv(shProgram.iProjectionMatrix, false, m4.multiply(projection, matAccum1));
@@ -165,6 +188,16 @@ function draw() {
     // gl.uniformMatrix4fv(shProgram.iModelViewProjectionMatrix, false, m4.multiply(modelViewProjection, m4.multiply(camera.mLeftModelViewMatrix, camera.mLeftProjectionMatrix)));
     gl.uniformMatrix4fv(shProgram.iModelViewMatrix, false, m4.multiply(modelViewProjection, camera.mLeftModelViewMatrix));
 
+    
+    panner?.setPosition(...sphereCoordinates);
+    gl.bindTexture(gl.TEXTURE_2D, textureVID);
+    projection = m4.perspective(deg2rad(90), 1, 0.1, 100);
+    const translationSphere = m4.translation(...sphereCoordinates);
+    const modelViewMatrix = m4.multiply(translationSphere, modelView);
+    gl.uniformMatrix4fv(shProgram.iProjectionMatrix, false, projection);
+    gl.uniformMatrix4fv(shProgram.iModelViewMatrix, false, modelViewMatrix);
+    sphere.Draw();
+  
     projection = camera.mLeftProjectionMatrix;
     gl.uniformMatrix4fv(shProgram.iProjectionMatrix, false, m4.multiply(projection, matAccum1));
     gl.clear(gl.DEPTH_BUFFER_BIT);
@@ -303,6 +336,10 @@ function initGL() {
     shProgram.iUP = gl.getUniformLocation(prog, 'translateUP');
     shProgram.iTMU = gl.getUniformLocation(prog, 'tmu');
 
+    const sphereData = CreateSphereData(0.5, 500, 500);
+    sphere = new Model('Sphere');
+    sphere.BufferData(sphereData.vertexList, sphereData.textureList);
+
 
     point = new Model('Point');
     surface = new Model('Surface');
@@ -390,6 +427,8 @@ function init() {
     spaceball = new TrackballRotator(canvas, draw, 0);
 
     draw();
+    setAudioParams()
+    initAudioContext();
     requestNewFrame();
 }
 
@@ -529,3 +568,97 @@ function onRead() {
 let magSensor = new Magnetometer()
 magSensor.addEventListener("reading", onRead)
 magSensor.start();
+
+
+
+const getSoundBuffer = (soundFileName) => {
+    return new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest();
+      request.open("GET", soundFileName, true);
+      request.responseType = "arraybuffer";
+      request.onload = function (e) {
+        resolve(request.response);
+      };
+      request.send();
+    })
+  }
+  
+  let box;
+  let source
+  
+  function setAudioParams() {
+      box = document.getElementById('boxik');
+      audio = document.getElementById('audio');
+  
+      audio.addEventListener('play', () => {
+          if (!ctx) {
+              ctx = new AudioContext();
+              source = ctx.createMediaElementSource(audio);
+              panner = ctx.createPanner();
+              filter = ctx.createBiquadFilter();
+  
+              source.connect(panner);
+              panner.connect(filter);
+              filter.connect(ctx.destination);
+  
+              filter.type = 'highpass';
+              filter.Q.value = 0.5;
+              filter.frequency.value = 5000;
+              filter.gain.value = 7;
+              ctx.resume();
+          }
+      })
+  
+  
+      audio.addEventListener('pause', () => {
+          console.log('pause');
+          ctx.resume();
+      })
+  }
+  
+  function initAudioContext() {
+      box.addEventListener('change', function () {
+          if (box.checked) {
+              panner.disconnect();
+              panner.connect(filter);
+              filter.connect(ctx.destination);
+          } else {
+              panner.disconnect();
+              panner.connect(ctx.destination);
+          }
+      });
+      audio.play();
+  }
+  
+  function CreateSphereData(multiplier, iSegments, jSegments) {
+    const vertexList = [];
+    const textureList = [];
+  
+    for (let i = 0; i <= iSegments; i++) {
+      const theta = i * Math.PI / iSegments;
+      const sinTheta = Math.sin(theta);
+      const cosTheta = Math.cos(theta);
+  
+      for (let j = 0; j <= jSegments; j++) {
+        const phi = j * 2 * Math.PI / jSegments;
+        const sinPhi = Math.sin(phi);
+        const cosPhi = Math.cos(phi);
+        const x = multiplier * cosPhi * sinTheta;
+        const y = multiplier * cosTheta;
+        const z = multiplier * sinPhi * sinTheta;
+  
+        vertexList.push(x, y, z)
+  
+        const u = 1 - (j / jSegments);
+        const v = 1 - (i / iSegments);
+        textureList.push(u, v);
+      }
+    }
+  
+    return { vertexList, textureList };
+  }
+  
+  function moveCircleSphere(angle, offsetX = 0, offsetZ = -5, radius = 4) {
+    sphereCoordinates[0] = offsetX + Math.cos(angle) * radius;
+    sphereCoordinates[2] = offsetZ + Math.sin(angle) * radius;
+  }
