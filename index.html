@@ -2,7 +2,6 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 
-<title>PA-1</title>
 <style>
     body {
         background-color: #d4d2d2;
@@ -15,16 +14,97 @@
 <script src="./main.js"></script>
 
 </head>
+<style>
+    /* Общие стили для всей страницы */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+    
+    /* Стили для заголовков */
+    h2 {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    h3 {
+        color: #666;
+        font-size: 18px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    
+    /* Стили для параграфов */
+    p {
+        line-height: 1.5;
+    }
+    
+    /* Стили для ползунков */
+    input[type="range"] {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    /* Стили для холста */
+    #canvas-holder {
+        width: 600px;
+        height: 600px;
+        margin-top: 20px;
+    }
+    
+    #webglcanvas {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .audio-player {
+      width: 500px;
+      margin: 20px auto;
+      text-align: center;
+    }
+    
+    .audio-player audio {
+      width: 100%;
+      height: 60px;
+    }
+    
+    .audio-controls {
+      margin-top: 20px;
+    }
+    
+    .audio-controls h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    
+    .audio-controls input[type="checkbox"] {
+      transform: scale(2);
+      margin-left: 10px;
+    }
+</style>
+
 <body onload="init()">
 
 <h2>A Cube with "Trackball" Mouse Rotation</h2>
 
-<h2>TR-22mp, Berezhniy Vlad, PA-2</h2>
+<h2>TR-22mp, Berezhniy Vlad, CGW</h2>
 
 <p id="message">Drag your mouse on the cube to rotate it.<br>
 (On a touch screen, you can use your finger.)</p>
 
-
+<div class="audio-player">
+    <audio src="song.mp3" controls id="audio"></audio>
+    <div class="audio-controls">
+      <h1>Sound Filter ON</h1>
+      <label class="custom-checkbox">
+        <input type="checkbox" id="boxik">
+        <span class="checkmark"></span>
+      </label>
+    </div>
+  </div>
 <h3>Near Clipping Distance</h3>
 <input type="range" id="nearclippingdistance" value="9" min="8" max="12" step="0.1">
 <h3>Convergence</h3>
